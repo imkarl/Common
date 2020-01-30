@@ -1,7 +1,6 @@
 package cn.imkarl.core.common.platform
 
 import cn.imkarl.core.common.log.LogLevel
-import org.joor.Reflect
 
 /**
  * Android平台
@@ -18,7 +17,9 @@ internal class AndroidPlatform: LinuxPlatform() {
             LogLevel.ERROR -> 6
         }
 
-        Reflect.on("android.util.Log").call("println", priority, tag, message)
+        val log = Class.forName("android.util.Log")
+        val println = log.getMethod("println", Int::class.java, String::class.java, String::class.java)
+        println.invoke(log, priority, tag, message)
     }
 
 }
