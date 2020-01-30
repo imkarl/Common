@@ -147,8 +147,8 @@ object LogUtils {
 
 enum class LogLevel {
     VERBOSE,
-    DEBUG,
     INFO,
+    DEBUG,
     WARN,
     ERROR
 }

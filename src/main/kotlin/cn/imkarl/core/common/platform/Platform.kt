@@ -58,11 +58,26 @@ internal abstract class Platform internal constructor() {
 
 
     fun console(level: LogLevel, message: String) {
-        if (LogLevel.ERROR == level || LogLevel.WARN == level) {
-            System.err.println("[${level.name}] $message")
-        } else {
-            System.out.println("[${level.name}] $message")
+        val colorValue = when (level) {
+            LogLevel.VERBOSE -> ConsoleColors.Black.value
+            LogLevel.INFO -> ConsoleColors.Green.value
+            LogLevel.DEBUG -> ConsoleColors.Blue.value
+            LogLevel.WARN -> ConsoleColors.Yellow.value
+            LogLevel.ERROR -> ConsoleColors.Red.value
         }
+        System.out.println("$colorValue[${level.name}] $message")
     }
 
+}
+
+private enum class ConsoleColors(val value: String) {
+    Black("\u001b[30m"),
+    Red("\u001b[31m"),
+    Green("\u001b[32m"),
+    Yellow("\u001b[33m"),
+    Blue("\u001b[34m"),
+    Purple("\u001b[35m"),
+    LightBlue("\u001b[36m"),
+    Gray("\u001b[37m"),
+    Cyan("\u001b[92m")
 }
