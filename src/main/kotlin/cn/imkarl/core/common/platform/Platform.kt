@@ -11,6 +11,7 @@ internal abstract class Platform internal constructor() {
     enum class OSType {
         WINDOWS,
         LINUX,
+        ANDROID,
         SOLARIS,
         MACOSX,
         AIX,
@@ -18,17 +19,14 @@ internal abstract class Platform internal constructor() {
     }
 
     companion object {
-        private val platform by lazy {
+        val instance by lazy {
             when (osType) {
                 OSType.WINDOWS -> WindowsPlatform()
                 OSType.MACOSX -> MacOSPlatform()
                 OSType.LINUX -> LinuxPlatform()
+                OSType.ANDROID -> AndroidPlatform()
                 else -> throw UnknownError("不支持的平台")
             }
-        }
-
-        fun get(): Platform {
-            return platform
         }
 
         val osType: OSType?
@@ -39,6 +37,11 @@ internal abstract class Platform internal constructor() {
                         return OSType.WINDOWS
                     }
                     if (osName.contains("Linux")) {
+                        val httpAgent = System.getProperty("http.agent") ?: ""
+                        if (httpAgent.contains("Android")
+                            && Class.forName("android.os.Build") != null) {
+                            return OSType.ANDROID
+                        }
                         return OSType.LINUX
                     }
                     if (osName.contains("Solaris") || osName.contains("SunOS")) {
@@ -57,20 +60,21 @@ internal abstract class Platform internal constructor() {
     }
 
 
-    fun console(level: LogLevel, message: String) {
-        val colorValue = when (level) {
-            LogLevel.VERBOSE -> ConsoleColors.Black.value
-            LogLevel.INFO -> ConsoleColors.Green.value
-            LogLevel.DEBUG -> ConsoleColors.Blue.value
-            LogLevel.WARN -> ConsoleColors.Yellow.value
-            LogLevel.ERROR -> ConsoleColors.Red.value
+    open fun console(level: LogLevel, tag: String, message: String) {
+        val colorAnsi = when (level) {
+            LogLevel.VERBOSE -> ConsoleColors.Black.ansi
+            LogLevel.INFO -> ConsoleColors.Green.ansi
+            LogLevel.DEBUG -> ConsoleColors.Blue.ansi
+            LogLevel.WARN -> ConsoleColors.Yellow.ansi
+            LogLevel.ERROR -> ConsoleColors.Red.ansi
         }
-        System.out.println("$colorValue[${level.name}] $message")
+
+        println("$colorAnsi[${level.name}] $tag: $message")
     }
 
 }
 
-private enum class ConsoleColors(val value: String) {
+private enum class ConsoleColors(val ansi: String) {
     Black("\u001b[30m"),
     Red("\u001b[31m"),
     Green("\u001b[32m"),

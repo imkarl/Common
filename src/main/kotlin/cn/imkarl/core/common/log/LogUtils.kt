@@ -12,16 +12,16 @@ import java.net.UnknownHostException
  */
 object LogUtils {
 
-    private var _maxLineLength = 3000
+    private var _maxOnceLength = 3000
     private var _globalTag = AppUtils.appName
 
 
     /**
-     * 设置最大打印长度
+     * 设置单次最大打印长度
      */
     @JvmStatic
-    fun setMaxLength(length: Int) {
-        this._maxLineLength = length
+    fun setMaxOnceLength(length: Int) {
+        this._maxOnceLength = length
     }
 
     /**
@@ -82,15 +82,27 @@ object LogUtils {
 
     @JvmStatic
     fun println(level: LogLevel, msg: String?) {
+        if (!AppUtils.isDebug) {
+            return
+        }
+
         console(level, _globalTag, toString(msg))
     }
     @JvmStatic
     fun println(level: LogLevel, tag: String, msg: String?) {
+        if (!AppUtils.isDebug) {
+            return
+        }
+
         console(level, tag, toString(msg))
     }
 
 
     private fun log(level: LogLevel, tag: String, message: Any?) {
+        if (!AppUtils.isDebug) {
+            return
+        }
+
         val element = Throwable().stackTrace[2]
         var className = element.className
         className = className.substring(className.lastIndexOf(".") + 1)
@@ -102,23 +114,20 @@ object LogUtils {
      * 真实的打印方法
      */
     private fun console(level: LogLevel, tag: String, msg: String) {
-        if (msg.length <= _maxLineLength) {
-            console(level, "$tag: $msg")
+        if (msg.length <= _maxOnceLength) {
+            Platform.instance.console(level, tag, msg)
             return
         }
 
         // 超出目标长度，自动换行打印
         var startIndex = 0
-        var endIndex = _maxLineLength
+        var endIndex = _maxOnceLength
         while (endIndex > startIndex) {
-            console(level, "$tag: ${(if (startIndex == 0) "" else "\t↑↑↑↑\n") + msg.substring(startIndex, endIndex)}")
+            Platform.instance.console(level, tag, "${(if (startIndex == 0) "" else "\t↑↑↑↑\n") + msg.substring(startIndex, endIndex)}")
 
             startIndex = endIndex
-            endIndex = Math.min(msg.length, startIndex + _maxLineLength)
+            endIndex = Math.min(msg.length, startIndex + _maxOnceLength)
         }
-    }
-    private fun console(level: LogLevel, message: String) {
-        Platform.get().console(level, message)
     }
 
     private fun toString(message: Any?): String {
