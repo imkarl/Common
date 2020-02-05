@@ -69,7 +69,7 @@ internal abstract class Platform internal constructor() {
             LogLevel.ERROR -> ConsoleColors.Red.ansi
         }
 
-        println("$colorAnsi[${level.name}] $tag: $message")
+        println("${ConsoleColors.Purple.ansi}[${level.name}] $colorAnsi$tag: $message${ConsoleColors.Black.ansi}")
     }
 
 }
