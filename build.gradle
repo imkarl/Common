@@ -16,7 +16,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     // Reflect
-    compileOnly 'org.jooq:joor-java-6:0.9.7'
+    compile 'org.jooq:joor-java-6:0.9.7'
 
     // Json
     compile 'com.google.code.gson:gson:2.8.6'

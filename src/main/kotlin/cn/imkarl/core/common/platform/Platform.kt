@@ -69,12 +69,13 @@ internal abstract class Platform internal constructor() {
             LogLevel.ERROR -> ConsoleColors.Red.ansi
         }
 
-        println("${ConsoleColors.Purple.ansi}[${level.name}] $colorAnsi$tag: $message${ConsoleColors.Black.ansi}")
+        println("${ConsoleColors.Purple.ansi}[${level.name}] $colorAnsi$tag: $message${ConsoleColors.Default.ansi}")
     }
 
 }
 
 private enum class ConsoleColors(val ansi: String) {
+    Default("\u001b[0m"),
     Black("\u001b[30m"),
     Red("\u001b[31m"),
     Green("\u001b[32m"),
