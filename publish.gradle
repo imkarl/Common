@@ -1,0 +1,107 @@
+// maven发布
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+
+def mavenPropertiesFile = file('local.properties')
+def mavenProperties = new Properties()
+mavenProperties.load(new FileInputStream(mavenPropertiesFile))
+
+
+def PUBLISH_GROUP_ID = mavenProperties['publish.groupId']
+def PUBLISH_ARTIFACT_ID = mavenProperties['publish.artifactId']
+def PUBLISH_DESCRIPTION = mavenProperties['publish.description']
+
+def PROJECT_MAIN_URL = mavenProperties['project.mainUrl']
+def PROJECT_GIT_URL = mavenProperties['project.gitUrl']
+
+def DEVELOPER_NAME = mavenProperties['developer.name']
+def DEVELOPER_EMAIL = mavenProperties['developer.email']
+
+def LICENSE_NAME = mavenProperties['license.name']
+def LICENSE_URL = mavenProperties['license.url']
+
+def MAVEN_UPLOAD_URL = mavenProperties['maven.uploadUrl']
+def MAVEN_USERNAME = mavenProperties['maven.username']
+def MAVEN_PASSWORD = mavenProperties['maven.password']
+
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+
+publishing {
+    // 定义发布什么
+    publications {
+        mavenJava(MavenPublication) {
+             // groupId,artifactId,version，如果不定义，则会使用项目默认配置
+             groupId = PUBLISH_GROUP_ID
+             artifactId = PUBLISH_ARTIFACT_ID
+//             version = project.version
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                // 构件名称
+                // 区别于artifactId，可以理解为artifactName
+                name = project.name
+                // 构件描述
+                description = PUBLISH_DESCRIPTION
+                // 构件主页
+                url = PROJECT_MAIN_URL
+                // 许可证名称和地址
+                licenses {
+                    license {
+                        name = LICENSE_NAME
+                        url = LICENSE_URL
+                    }
+                }
+                // 开发者信息
+                developers {
+                    developer {
+                        name = DEVELOPER_NAME
+                        email = DEVELOPER_EMAIL
+                    }
+                }
+                // 版本控制仓库地址
+                scm {
+                    url = PROJECT_MAIN_URL
+                    connection = PROJECT_GIT_URL
+                    developerConnection = PROJECT_GIT_URL
+                }
+            }
+        }
+    }
+    // 定义发布到哪里
+    repositories {
+        maven {
+            url MAVEN_UPLOAD_URL
+            credentials {
+                // issues.sonatype.org的账号
+                username MAVEN_USERNAME
+                password MAVEN_PASSWORD
+            }
+        }
+    }
+}
+
+// 签名
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+    // 防止本地打开中文乱码
+    options.addStringOption("charset", "UTF-8")
+}
