@@ -1,9 +1,6 @@
 package cn.imkarl.core.common.json
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
+import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
@@ -19,6 +16,25 @@ object JsonUtils {
 
     fun createGsonBuilder(): GsonBuilder {
         return GsonBuilder()
+
+                .addSerializationExclusionStrategy(object : ExclusionStrategy {
+                    override fun shouldSkipField(f: FieldAttributes?): Boolean {
+                        f?.getAnnotation(IgnoreSerialize::class.java)?.let {
+                            // 忽略该字段
+                            return true
+                        }
+                        return false
+                    }
+
+                    override fun shouldSkipClass(clazz: Class<*>?): Boolean {
+                        clazz?.getAnnotation(IgnoreSerialize::class.java)?.let {
+                            // 忽略该类
+                            return true
+                        }
+                        return false
+                    }
+                })
+
                 .registerTypeAdapter(Boolean::class.java, JsonDeserializer<Boolean> { json, _, _ ->
                     if (!json.isJsonPrimitive) {
                         return@JsonDeserializer false
