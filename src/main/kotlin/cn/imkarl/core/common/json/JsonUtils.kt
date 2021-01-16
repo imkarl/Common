@@ -13,10 +13,11 @@ import java.lang.reflect.Type
  */
 object JsonUtils {
 
+    @JvmStatic
     val gson: Gson by lazy { createGsonBuilder().create() }
     private val gsonPretty: Gson by lazy { createGsonBuilder().setPrettyPrinting().create() }
 
-    private fun createGsonBuilder(): GsonBuilder {
+    fun createGsonBuilder(): GsonBuilder {
         return GsonBuilder()
                 .registerTypeAdapter(Boolean::class.java, JsonDeserializer<Boolean> { json, _, _ ->
                     if (!json.isJsonPrimitive) {
