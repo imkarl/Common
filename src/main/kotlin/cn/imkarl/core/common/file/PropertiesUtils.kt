@@ -2,6 +2,9 @@ package cn.imkarl.core.common.file
 
 import cn.imkarl.core.common.json.JsonUtils
 import java.io.File
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.nio.charset.Charset
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -10,7 +13,10 @@ import kotlin.reflect.KProperty
  * Properties工具类
  * @author imkarl
  */
-class PropertiesUtils(private val file: File) {
+class PropertiesUtils(
+    private val file: File,
+    private val charset: Charset = Charsets.UTF_8
+) {
 
     private val properties: Properties
 
@@ -19,7 +25,7 @@ class PropertiesUtils(private val file: File) {
             FileUtils.createNewFile(file)
         }
         properties = Properties()
-        properties.load(file.inputStream())
+        properties.load(InputStreamReader(file.inputStream(), charset))
     }
 
     fun getString(key: String): String? {
@@ -159,7 +165,7 @@ class PropertiesUtils(private val file: File) {
          * 提交修改
          */
         fun commit() {
-            properties.store(file.outputStream(), null)
+            properties.store(OutputStreamWriter(file.outputStream(), charset), null)
         }
     }
 
