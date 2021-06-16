@@ -73,8 +73,8 @@ object FileUtils {
      * 获取用户默认根目录
      */
     @JvmStatic
-    fun getUserHomeRootFile(): File {
-        return File(System.getProperty("user.home"), ".AppData")
+    fun getUserHomeFile(): File {
+        return File(System.getProperty("user.home"))
     }
 
     /**
@@ -82,7 +82,25 @@ object FileUtils {
      */
     @JvmStatic
     fun getAppStorageRootFile(): File {
-        return File(getUserHomeRootFile(), AppUtils.packageName)
+        return File(getUserHomeFile(), ".AppData/${AppUtils.packageName.removePrefix("/")}")
+    }
+
+    /**
+     * 获取绝对路径的File对象
+     */
+    @JvmStatic
+    fun getAbsoluteFile(path: String): File {
+        val absolutePath = path.trim()
+        val file = if (absolutePath == "~") {
+            getUserHomeFile()
+        } else if (absolutePath.startsWith("~/")) {
+            File(getUserHomeFile(), absolutePath.removePrefix("~/"))
+        } else if (absolutePath.startsWith("~\\")) {
+            File(getUserHomeFile(), absolutePath.removePrefix("~\\"))
+        } else {
+            File(absolutePath)
+        }
+        return file.absoluteFile
     }
 
 

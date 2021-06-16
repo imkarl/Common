@@ -6,7 +6,7 @@ import cn.imkarl.core.common.log.LogLevel
  * 平台实现相关
  * @author imkarl
  */
-internal abstract class Platform internal constructor() {
+abstract class Platform internal constructor() {
 
     enum class OSType {
         WINDOWS,
