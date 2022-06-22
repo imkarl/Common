@@ -31,7 +31,7 @@ object FileUtils {
      * 获取类所在的根目录
      */
     @JvmStatic
-    fun getClassRootFile(sourceType: SourceType? = null): File {
+    fun getClassRootDir(sourceType: SourceType? = null): File {
         val classLoader = FileUtils::class.java.classLoader
         if (AppUtils.isJarRun) {
             val codeSourcePath = FileUtils::class.java.protectionDomain.codeSource.location.path
@@ -55,12 +55,12 @@ object FileUtils {
      * 获取资源文件所在的根目录
      */
     @JvmStatic
-    fun getResourceRootFile(): File {
+    fun getResourceRootDir(): File {
         if (AppUtils.isJarRun) {
-            return getClassRootFile()
+            return getClassRootDir()
         }
 
-        var resourceRootFile = File(getClassRootFile().parent, "resources")
+        var resourceRootFile = File(getClassRootDir().parent, "resources")
         File(resourceRootFile, "main").let {
             if (it.exists()) {
                 resourceRootFile = it
@@ -73,16 +73,24 @@ object FileUtils {
      * 获取用户默认根目录
      */
     @JvmStatic
-    fun getUserHomeFile(): File {
+    fun getUserHomeDir(): File {
         return File(System.getProperty("user.home"))
+    }
+
+    /**
+     * 获取当前运行目录
+     */
+    @JvmStatic
+    fun getCurrentDir(): File {
+        return File(System.getProperty("user.dir"))
     }
 
     /**
      * 获取APP数据存储根目录
      */
     @JvmStatic
-    fun getAppStorageRootFile(): File {
-        return File(getUserHomeFile(), ".AppData/${AppUtils.packageName.removePrefix("/")}")
+    fun getAppStorageRootDir(): File {
+        return File(getUserHomeDir(), ".AppData/${AppUtils.packageName.removePrefix("/")}")
     }
 
     /**
@@ -92,11 +100,11 @@ object FileUtils {
     fun getAbsoluteFile(path: String): File {
         val absolutePath = path.trim()
         val file = if (absolutePath == "~") {
-            getUserHomeFile()
+            getUserHomeDir()
         } else if (absolutePath.startsWith("~/")) {
-            File(getUserHomeFile(), absolutePath.removePrefix("~/"))
+            File(getUserHomeDir(), absolutePath.removePrefix("~/"))
         } else if (absolutePath.startsWith("~\\")) {
-            File(getUserHomeFile(), absolutePath.removePrefix("~\\"))
+            File(getUserHomeDir(), absolutePath.removePrefix("~\\"))
         } else {
             File(absolutePath)
         }

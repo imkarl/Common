@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.0'
 }
 
 
 group 'cn.imkarl.core'
-version '1.3.8'
+version '1.4.0'
 
 apply from: 'publish.gradle'
 
@@ -13,19 +13,27 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+    maven { url "https://maven.aliyun.com/repository/google" }
+    maven { url "https://maven.aliyun.com/repository/central" }
+    maven { url "https://maven.aliyun.com/repository/public" }
+    maven { url "https://maven.aliyun.com/repository/releases" }
+    maven { url "https://maven.aliyun.com/repository/snapshots" }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    // kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.0'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.20.0"
+    // coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2'
 
     // Reflect
-    compile 'org.jooq:joor-java-6:0.9.7'
+    implementation "org.jooq:joor-java-6:0.9.14"
 
     // Json
-    compile 'com.google.code.gson:gson:2.8.6'
-
-    // test
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "com.google.code.gson:gson:2.9.0"
 }
 
 compileKotlin {
