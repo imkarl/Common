@@ -5,11 +5,11 @@ import cn.imkarl.core.common.file.closeQuietly
 import cn.imkarl.core.common.log.LogUtils
 import java.io.File
 import java.io.FileInputStream
-import java.security.DigestInputStream
-import java.security.InvalidKeyException
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import java.security.*
+import javax.crypto.Cipher
 import javax.crypto.Mac
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.DESKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 /**
@@ -267,5 +267,51 @@ object EncryptUtils {
 
         return null
     }
+
+
+
+
+    private const val defaultKey = "e99a18c428cb38d5f260853678922e03"
+
+    /**
+     * 字符DES加密
+     */
+    fun encryptDES(data: String, key: String = ""): String {
+        //创建cipher对象
+        val cipher = Cipher.getInstance("DES")
+
+        //初始化cipher(参数：加密/解密模式)
+        val kf = SecretKeyFactory.getInstance("DES")
+        val keySpec = DESKeySpec((defaultKey + key).toByteArray())
+
+        val secretKey = kf.generateSecret(keySpec)
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+
+        //加密
+        val encrypt = cipher.doFinal(data.toByteArray())
+
+        //base64加密
+        return EncodeUtils.encodeBase64(encrypt)!!
+    }
+
+    /**
+     * 字符DES解密
+     */
+    fun decryptDES(data: String, key: String = ""): String {
+        //创建cipher对象
+        val cipher = Cipher.getInstance("DES")
+
+        //初始化cipher(参数：加密/解密模式)
+        val kf = SecretKeyFactory.getInstance("DES")
+        val keySpec = DESKeySpec((defaultKey + key).toByteArray())
+
+        val secretKey: Key = kf.generateSecret(keySpec)
+        cipher.init(Cipher.DECRYPT_MODE, secretKey)
+
+        //base64解码
+        val decrypt = cipher.doFinal(EncodeUtils.decodeBase64(data))
+        return String(decrypt)
+    }
+
 
 }

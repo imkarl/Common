@@ -99,14 +99,17 @@ object FileUtils {
     @JvmStatic
     fun getAbsoluteFile(path: String): File {
         val absolutePath = path.trim()
-        val file = if (absolutePath == "~") {
-            getUserHomeDir()
-        } else if (absolutePath.startsWith("~/")) {
-            File(getUserHomeDir(), absolutePath.removePrefix("~/"))
-        } else if (absolutePath.startsWith("~\\")) {
-            File(getUserHomeDir(), absolutePath.removePrefix("~\\"))
-        } else {
-            File(absolutePath)
+        val file = when {
+            absolutePath == "~" -> getUserHomeDir()
+            absolutePath.startsWith("~/") -> File(getUserHomeDir(), absolutePath.removePrefix("~/"))
+            absolutePath.startsWith("~\\") -> File(getUserHomeDir(), absolutePath.removePrefix("~\\"))
+
+            absolutePath == "." -> getCurrentDir()
+            absolutePath.startsWith("./") -> File(getCurrentDir(), absolutePath.removePrefix("./"))
+            absolutePath.startsWith(".\\") -> File(getCurrentDir(), absolutePath.removePrefix(".\\"))
+            !absolutePath.startsWith("/") -> File(getCurrentDir(), absolutePath)
+
+            else -> File(absolutePath)
         }
         return file.absoluteFile
     }
@@ -410,14 +413,14 @@ object FileUtils {
 
     @JvmStatic
     fun formatFileSize(size: Long): String {
-        if (size > FILE_SIZE_GB*1.2) {
-            return "${fileSizeFormat.format((size*100/FILE_SIZE_GB)*0.01)}GB"
+        if (size > FILE_SIZE_GB * 1.2) {
+            return "${fileSizeFormat.format((size * 100 / FILE_SIZE_GB) * 0.01)}GB"
         }
-        if (size > FILE_SIZE_MB*1.2) {
-            return "${fileSizeFormat.format((size*100/FILE_SIZE_MB)*0.01)}MB"
+        if (size > FILE_SIZE_MB * 1.2) {
+            return "${fileSizeFormat.format((size * 100 / FILE_SIZE_MB) * 0.01)}MB"
         }
         if (size > FILE_SIZE_KB) {
-            return "${fileSizeFormat.format((size*100/FILE_SIZE_KB)*0.01)}KB"
+            return "${fileSizeFormat.format((size * 100 / FILE_SIZE_KB) * 0.01)}KB"
         }
         return "${fileSizeFormat.format(size)}B"
     }
