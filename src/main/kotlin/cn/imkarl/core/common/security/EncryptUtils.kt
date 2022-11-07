@@ -227,7 +227,7 @@ object EncryptUtils {
         }
 
         try {
-            if (data.size > 0) {
+            if (data.isNotEmpty()) {
                 val md = MessageDigest.getInstance(algorithm)
                 md.update(data)
                 return md.digest()
@@ -253,7 +253,7 @@ object EncryptUtils {
         }
 
         try {
-            if (key.size > 0 && data.size > 0) {
+            if (key.isNotEmpty() && data.isNotEmpty()) {
                 val mac = Mac.getInstance(algorithm)
                 val secretKey = SecretKeySpec(key, algorithm)
                 mac.init(secretKey)
@@ -269,47 +269,40 @@ object EncryptUtils {
     }
 
 
-
-
-    private const val defaultKey = "e99a18c428cb38d5f260853678922e03"
-
     /**
      * 字符DES加密
      */
-    fun encryptDES(data: String, key: String = ""): String {
+    fun encryptDES(data: String, key: String): ByteArray {
         //创建cipher对象
         val cipher = Cipher.getInstance("DES")
 
         //初始化cipher(参数：加密/解密模式)
         val kf = SecretKeyFactory.getInstance("DES")
-        val keySpec = DESKeySpec((defaultKey + key).toByteArray())
+        val keySpec = DESKeySpec(key.toByteArray())
 
         val secretKey = kf.generateSecret(keySpec)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
         //加密
-        val encrypt = cipher.doFinal(data.toByteArray())
-
-        //base64加密
-        return EncodeUtils.encodeBase64(encrypt)!!
+        return cipher.doFinal(data.toByteArray())
     }
 
     /**
      * 字符DES解密
      */
-    fun decryptDES(data: String, key: String = ""): String {
+    fun decryptDES(data: ByteArray, key: String): String {
         //创建cipher对象
         val cipher = Cipher.getInstance("DES")
 
         //初始化cipher(参数：加密/解密模式)
         val kf = SecretKeyFactory.getInstance("DES")
-        val keySpec = DESKeySpec((defaultKey + key).toByteArray())
+        val keySpec = DESKeySpec(key.toByteArray())
 
         val secretKey: Key = kf.generateSecret(keySpec)
         cipher.init(Cipher.DECRYPT_MODE, secretKey)
 
         //base64解码
-        val decrypt = cipher.doFinal(EncodeUtils.decodeBase64(data))
+        val decrypt = cipher.doFinal(data)
         return String(decrypt)
     }
 

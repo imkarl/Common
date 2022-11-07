@@ -1,6 +1,5 @@
 package cn.imkarl.core.common.file
 
-import cn.imkarl.core.common.encode.EncodeUtils
 import cn.imkarl.core.common.log.LogUtils
 import java.io.*
 import java.nio.charset.Charset
@@ -39,7 +38,7 @@ object IOUtils {
     }
 
     @JvmStatic
-    fun copyToString(source: InputStream, charset: Charset = EncodeUtils.UTF_8): String {
+    fun copyToString(source: InputStream, charset: Charset = Charsets.UTF_8): String {
         val out = ByteArrayOutputStream()
         val bufferedInputStream = BufferedInputStream(source)
         copy(bufferedInputStream, out)
