@@ -113,3 +113,19 @@ fun ByteArray.decryptAES(key: String): String {
     return EncryptUtils.decryptAES(this, key)
 }
 
+
+
+/**
+ * 字符 RSA 加密
+ */
+fun String.encryptRSA(publicKey: String): ByteArray {
+    return EncryptUtils.encryptRSA(this, publicKey)
+}
+
+/**
+ * 字符 RSA 解密
+ */
+fun ByteArray.decryptRSA(privateKey: String): String {
+    return EncryptUtils.decryptRSA(this, privateKey)
+}
+

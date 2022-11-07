@@ -1,11 +1,15 @@
 package cn.imkarl.core.common.security
 
 import cn.imkarl.core.common.encode.EncodeUtils
+import cn.imkarl.core.common.encode.decodeBase64
+import cn.imkarl.core.common.encode.encodeBase64
 import cn.imkarl.core.common.file.closeQuietly
 import cn.imkarl.core.common.log.LogUtils
 import java.io.File
 import java.io.FileInputStream
 import java.security.*
+import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 import javax.crypto.Mac
 import javax.crypto.SecretKeyFactory
@@ -332,6 +336,54 @@ object EncryptUtils {
         //初始化cipher
         val keySpec = SecretKeySpec(key.toByteArray(), "AES")
         cipher.init(Cipher.DECRYPT_MODE, keySpec)
+
+        //解密
+        val decrypt = cipher.doFinal(data)
+        return String(decrypt)
+    }
+
+
+    fun generatorRSAKey(): Pair<String, String> {
+        val generator = KeyPairGenerator.getInstance("RSA")
+        val keyPair = generator.genKeyPair()
+
+        val publicKey = keyPair.public
+        val privateKey = keyPair.private
+
+        return publicKey.encoded.encodeBase64()!! to privateKey.encoded.encodeBase64()!!
+    }
+    /**
+     * 字符 RSA 加密
+     */
+    fun encryptRSA(data: String, publicKey: String): ByteArray {
+        //字符串转成密钥对对象
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val rsaPublicKey = keyFactory.generatePublic(X509EncodedKeySpec(publicKey.decodeBase64()))
+
+
+        //创建cipher对象
+        val cipher = Cipher.getInstance("RSA")
+
+        //初始化cipher
+        cipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey)
+
+        //加密
+        return cipher.doFinal(data.toByteArray())
+    }
+
+    /**
+     * 字符 RSA 解密
+     */
+    fun decryptRSA(data: ByteArray, privateKey: String): String {
+        //字符串转成密钥对对象
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val rsaPrivateKey = keyFactory.generatePrivate(PKCS8EncodedKeySpec(privateKey.decodeBase64()))
+
+        //创建cipher对象
+        val cipher = Cipher.getInstance("RSA")
+
+        //初始化cipher
+        cipher.init(Cipher.DECRYPT_MODE, rsaPrivateKey)
 
         //解密
         val decrypt = cipher.doFinal(data)
