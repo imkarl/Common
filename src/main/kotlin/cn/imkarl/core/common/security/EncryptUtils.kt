@@ -19,7 +19,7 @@ import javax.crypto.spec.SecretKeySpec
 object EncryptUtils {
 
     /**
-     * MD5加密
+     * 计算 MD5 值
      *
      * @param data 待加密的字符串
      * @return 32位MD5校验码
@@ -32,7 +32,7 @@ object EncryptUtils {
     }
 
     /**
-     * MD5加密
+     * 计算 MD5 值
      *
      * @param data 待加密的字节数组
      * @return 32位MD5校验码
@@ -45,7 +45,7 @@ object EncryptUtils {
     }
 
     /**
-     * MD5加密
+     * 计算 MD5 值
      *
      * @param file 待加密的文件
      * @return 32位MD5校验码
@@ -77,7 +77,7 @@ object EncryptUtils {
     }
 
     /**
-     * SHA1加密
+     * 计算 SHA1 值
      *
      * @param data 明文
      * @return 密文
@@ -90,7 +90,7 @@ object EncryptUtils {
     }
 
     /**
-     * SHA1加密
+     * 计算 SHA1 值
      *
      * @param data 明文
      * @return 密文
@@ -276,7 +276,7 @@ object EncryptUtils {
         //创建cipher对象
         val cipher = Cipher.getInstance("DES")
 
-        //初始化cipher(参数：加密/解密模式)
+        //初始化cipher
         val kf = SecretKeyFactory.getInstance("DES")
         val keySpec = DESKeySpec(key.toByteArray())
 
@@ -294,14 +294,46 @@ object EncryptUtils {
         //创建cipher对象
         val cipher = Cipher.getInstance("DES")
 
-        //初始化cipher(参数：加密/解密模式)
+        //初始化cipher
         val kf = SecretKeyFactory.getInstance("DES")
         val keySpec = DESKeySpec(key.toByteArray())
 
         val secretKey: Key = kf.generateSecret(keySpec)
         cipher.init(Cipher.DECRYPT_MODE, secretKey)
 
-        //base64解码
+        //解密
+        val decrypt = cipher.doFinal(data)
+        return String(decrypt)
+    }
+
+
+    /**
+     * 字符AES加密
+     */
+    fun encryptAES(data: String, key: String): ByteArray {
+        //创建cipher对象
+        val cipher = Cipher.getInstance("AES")
+
+        //初始化cipher
+        val keySpec = SecretKeySpec(key.toByteArray(), "AES")
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec)
+
+        //加密
+        return cipher.doFinal(data.toByteArray())
+    }
+
+    /**
+     * 字符AES解密
+     */
+    fun decryptAES(data: ByteArray, key: String): String {
+        //创建cipher对象
+        val cipher = Cipher.getInstance("AES")
+
+        //初始化cipher
+        val keySpec = SecretKeySpec(key.toByteArray(), "AES")
+        cipher.init(Cipher.DECRYPT_MODE, keySpec)
+
+        //解密
         val decrypt = cipher.doFinal(data)
         return String(decrypt)
     }
