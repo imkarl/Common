@@ -34,8 +34,19 @@ object FileUtils {
     fun getClassRootDir(sourceType: SourceType? = null): File {
         val classLoader = FileUtils::class.java.classLoader
         if (AppUtils.isJarRun) {
-            val codeSourcePath = FileUtils::class.java.protectionDomain.codeSource.location.path
-            return File(codeSourcePath)
+            val codeSourcePath = FileUtils::class.java.protectionDomain.codeSource.location.path.removePrefix("file:")
+            var jarFile = File(codeSourcePath)
+            while (!jarFile.exists()) {
+                if (jarFile == jarFile.parentFile) {
+                    jarFile = File(codeSourcePath)
+                    break
+                }
+                jarFile = jarFile.parentFile
+                if (jarFile.absolutePath.endsWith("!")) {
+                    jarFile = File(jarFile.absolutePath.removeSuffix("!"))
+                }
+            }
+            return jarFile
         }
 
         var classRootPath = classLoader.getResource("")!!.file
