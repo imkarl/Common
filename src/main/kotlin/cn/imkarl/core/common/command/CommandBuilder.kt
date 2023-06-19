@@ -138,14 +138,20 @@ class CommandBuilder(
                         }
                     }
                 } catch (throwable: Throwable) {
-                    LogUtils.e(throwable)
+                    if (showLog) {
+                        LogUtils.e(throwable)
+                    }
                     continuation.resumeWithException(throwable)
                 }
 
-                LogUtils.e("start wait （${System.currentTimeMillis() - startTime}ms）")
+                if (showLog) {
+                    LogUtils.d("start wait （${System.currentTimeMillis() - startTime}ms）")
+                }
                 // 等待执行结果
                 val exitCode = process.waitFor()
-                LogUtils.e("end （${System.currentTimeMillis() - startTime}ms） isActive:${isActive}")
+                if (showLog) {
+                    LogUtils.d("end （${System.currentTimeMillis() - startTime}ms） isActive:${isActive}")
+                }
                 if (isActive) {
                     continuation.resume(ExecResult(exitCode = exitCode, output = outputCache, error = errorCache))
                 } else {
