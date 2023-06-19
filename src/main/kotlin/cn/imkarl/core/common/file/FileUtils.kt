@@ -5,6 +5,7 @@ import cn.imkarl.core.common.log.LogUtils
 import java.io.*
 import java.nio.channels.FileChannel
 import java.text.DecimalFormat
+import java.util.jar.JarFile
 
 /**
  * 文件相关工具类
@@ -78,6 +79,25 @@ object FileUtils {
             }
         }
         return resourceRootFile
+    }
+
+    /**
+     * 获取资源文件
+     */
+    @JvmStatic
+    fun getResourceFile(filePath: String): InputStream {
+        val classResourceDir = getResourceRootDir()
+        return if (AppUtils.isJarRun) {
+            JarFile(classResourceDir).let {
+                it.getInputStream(it.getJarEntry(filePath))
+            }
+        } else {
+            try {
+                File(classResourceDir, filePath).inputStream()
+            } catch (throwable: FileNotFoundException) {
+                File(File(classResourceDir.parentFile, "classes"), filePath).inputStream()
+            }
+        }
     }
 
     /**
