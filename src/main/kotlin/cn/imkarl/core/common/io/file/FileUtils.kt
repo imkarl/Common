@@ -1,6 +1,7 @@
-package cn.imkarl.core.common.file
+package cn.imkarl.core.common.io.file
 
 import cn.imkarl.core.common.app.AppUtils
+import cn.imkarl.core.common.io.closeQuietly
 import cn.imkarl.core.common.log.LogUtils
 import java.io.*
 import java.nio.channels.FileChannel
@@ -432,7 +433,7 @@ object FileUtils {
         var fos: FileOutputStream? = null
         try {
             fos = FileOutputStream(target)
-            IOUtils.copy(stream, fos)
+            stream.copyTo(fos)
             result = true
         } catch (e: IOException) {
             LogUtils.e(e)

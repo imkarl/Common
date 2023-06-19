@@ -1,4 +1,4 @@
-package cn.imkarl.core.common.file
+package cn.imkarl.core.common.io.file
 
 import java.io.File
 import java.io.InputStream
