@@ -1,6 +1,7 @@
 package cn.imkarl.core.common.file
 
 import cn.imkarl.core.common.json.JsonUtils
+import cn.imkarl.core.common.lang.cast
 import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -33,23 +34,6 @@ class PropertiesUtils(
     }
     fun getString(key: String, defValue: String?): String? {
         return properties.getProperty(key, defValue)
-    }
-
-    inline fun <reified T> get(key: String, defValue: T): T {
-        val value = getString(key)
-        if (value.isNullOrBlank()) {
-            return defValue
-        }
-
-        return when(T::class) {
-            String::class -> getString(key) ?: defValue
-            Boolean::class -> getString(key)?.toBoolean() ?: defValue
-            Double::class -> getString(key)?.toDoubleOrNull() ?: defValue
-            Float::class -> getString(key)?.toFloatOrNull() ?: defValue
-            Int::class -> getString(key)?.toIntOrNull() ?: defValue
-            Long::class -> getString(key)?.toLongOrNull() ?: defValue
-            else -> try { JsonUtils.fromJson<T>(getString(key)) } catch (throwable: Throwable) { defValue }
-        } as T
     }
 
 
@@ -100,7 +84,7 @@ class PropertiesUtils(
         return object: ReadWriteProperty<Any, T> {
             override fun getValue(thisRef: Any, property: KProperty<*>): T {
                 val key = property.name
-                return get(key, defValue)
+                return getString(key).cast(defValue)
             }
 
             override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
@@ -115,7 +99,7 @@ class PropertiesUtils(
     inline fun <reified T> fieldByKey(key: String, defValue: T): ReadWriteProperty<Any, T> {
         return object: ReadWriteProperty<Any, T> {
             override fun getValue(thisRef: Any, property: KProperty<*>): T {
-                return get(key, defValue)
+                return getString(key).cast(defValue)
             }
 
             override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {

@@ -1,4 +1,4 @@
-package cn.imkarl.core.common
+package cn.imkarl.core.common.random
 
 import java.security.SecureRandom
 import java.util.*
