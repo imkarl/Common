@@ -362,7 +362,7 @@ object EncryptUtils {
 
 
         //创建cipher对象
-        val cipher = Cipher.getInstance("RSA")
+        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
 
         //初始化cipher
         cipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey)
