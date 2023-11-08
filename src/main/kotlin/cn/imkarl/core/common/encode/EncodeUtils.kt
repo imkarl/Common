@@ -31,11 +31,11 @@ object EncodeUtils {
      */
     @JvmStatic
     fun encodeBase64(data: ByteArray): String? {
-        try {
-            return Base64.getEncoder().encodeToString(data)
+        return try {
+            Base64.getEncoder().encodeToString(data)
         } catch (e: Exception) {
             LogUtils.e(e)
-            return null
+            null
         }
 
     }
@@ -48,11 +48,11 @@ object EncodeUtils {
      */
     @JvmStatic
     fun decodeBase64(data: String): ByteArray? {
-        try {
-            return Base64.getDecoder().decode(data)
+        return try {
+            Base64.getDecoder().decode(data)
         } catch (e: Exception) {
             LogUtils.e(e)
-            return null
+            null
         }
 
     }
@@ -66,10 +66,10 @@ object EncodeUtils {
      */
     @JvmStatic
     fun encodeUrl(data: String, charset: Charset = UTF_8): String {
-        try {
-            return URLEncoder.encode(data, charset.name())
+        return try {
+            URLEncoder.encode(data, charset.name())
         } catch (e: UnsupportedEncodingException) {
-            return data
+            data
         }
     }
 
@@ -82,10 +82,10 @@ object EncodeUtils {
      */
     @JvmStatic
     fun decodeUrl(data: String, charset: Charset = UTF_8): String {
-        try {
-            return URLDecoder.decode(data, charset.name())
+        return try {
+            URLDecoder.decode(data, charset.name())
         } catch (e: UnsupportedEncodingException) {
-            return data
+            data
         }
     }
 
@@ -107,8 +107,8 @@ object EncodeUtils {
 
         val unicodeBytes = StringBuilder()
         for (ch in data.toCharArray()) {
-            if (ch.toInt() < 10) {
-                unicodeBytes.append("\\u000").append(Integer.toHexString(ch.toInt()))
+            if (ch.code < 10) {
+                unicodeBytes.append("\\u000").append(Integer.toHexString(ch.code))
                 continue
             }
 
@@ -196,7 +196,7 @@ object EncodeUtils {
             return null
         }
 
-        val length = str!!.length / 2
+        val length = str.length / 2
         val bytes = ByteArray(length)
         for (i in 0 until length) {
             bytes[i] = Integer.valueOf(str.substring(i * 2, i * 2 + 2), 16).toByte()

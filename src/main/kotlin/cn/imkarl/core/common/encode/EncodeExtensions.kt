@@ -95,7 +95,7 @@ fun String.encodeUnicode(): String {
             unicodeBytes.append(ch)
         } else {
             // to Unicode
-            val hex = Integer.toHexString(ch.toInt())
+            val hex = Integer.toHexString(ch.code)
             if (hex.length == 1) {
                 unicodeBytes.append("\\u000").append(hex)
             } else if (hex.length == 2) {
