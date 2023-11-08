@@ -85,7 +85,9 @@ class CommandBuilder(
                     .putEnvironments(defaultEnvironments)
                     .putEnvironments(environment)
                     .start()
-                LogUtils.e("start succes （${System.currentTimeMillis() - startTime}ms）")
+                if (showLog) {
+                    LogUtils.e("start success （${System.currentTimeMillis() - startTime}ms）")
+                }
 
                 // 打印日志
                 if (showLog) {

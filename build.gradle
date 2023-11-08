@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.10'
 }
 
 
 group 'cn.imkarl.core'
-version '1.4.6'
+version '1.4.7'
 
 apply from: 'publish.gradle'
 
@@ -23,8 +23,8 @@ repositories {
 
 dependencies {
     // kotlin
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20'
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.20'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.8.10'
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.20.0"
     // coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'

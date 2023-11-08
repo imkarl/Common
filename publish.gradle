@@ -26,14 +26,9 @@ def MAVEN_USERNAME = mavenProperties['maven.username']
 def MAVEN_PASSWORD = mavenProperties['maven.password']
 
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    classifier = 'sources'
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    classifier = 'javadoc'
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 
@@ -46,8 +41,6 @@ publishing {
              artifactId = PUBLISH_ARTIFACT_ID
 //             version = project.version
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             pom {
                 // 构件名称
                 // 区别于artifactId，可以理解为artifactName
@@ -94,6 +87,7 @@ publishing {
 
 // 签名
 signing {
+    useGpgCmd()
     sign publishing.publications.mavenJava
 }
 
