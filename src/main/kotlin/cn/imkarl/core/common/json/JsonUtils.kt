@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import java.io.InputStream
+import java.io.Reader
 import java.lang.reflect.Type
 
 /**
@@ -91,7 +93,39 @@ object JsonUtils {
     }
 
     @JvmStatic
+    fun <T> fromJson(json: InputStream?, typeToken: TypeToken<T>): T? {
+        if (json == null) {
+            return null
+        }
+        return fromJson(json.reader(), typeToken.type)
+    }
+
+    @JvmStatic
+    fun <T> fromJson(json: Reader?, typeToken: TypeToken<T>): T? {
+        if (json == null) {
+            return null
+        }
+        return fromJson(json, typeToken.type)
+    }
+
+    @JvmStatic
     inline fun <reified T> fromJson(json: JsonElement?): T? {
+        if (json == null) {
+            return null
+        }
+        return fromJson(json, object : TypeToken<T>() {})
+    }
+
+    @JvmStatic
+    inline fun <reified T> fromJson(json: InputStream?): T? {
+        if (json == null) {
+            return null
+        }
+        return fromJson(json.reader(), object : TypeToken<T>() {})
+    }
+
+    @JvmStatic
+    inline fun <reified T> fromJson(json: Reader?): T? {
         if (json == null) {
             return null
         }
@@ -115,6 +149,22 @@ object JsonUtils {
     }
 
     @JvmStatic
+    fun <T> fromJson(json: InputStream?, typeOfT: Type): T? {
+        if (json == null) {
+            return null
+        }
+        return gson.fromJson(json.reader(), typeOfT)
+    }
+
+    @JvmStatic
+    fun <T> fromJson(json: Reader?, typeOfT: Type): T? {
+        if (json == null) {
+            return null
+        }
+        return gson.fromJson(json, typeOfT)
+    }
+
+    @JvmStatic
     fun <T> fromJson(json: String?, classOfT: Class<T>): T? {
         if (json == null) {
             return null
@@ -124,6 +174,22 @@ object JsonUtils {
 
     @JvmStatic
     fun <T> fromJson(json: JsonElement?, classOfT: Class<T>): T? {
+        if (json == null) {
+            return null
+        }
+        return gson.fromJson(json, classOfT)
+    }
+
+    @JvmStatic
+    fun <T> fromJson(json: InputStream?, classOfT: Class<T>): T? {
+        if (json == null) {
+            return null
+        }
+        return gson.fromJson(json.reader(), classOfT)
+    }
+
+    @JvmStatic
+    fun <T> fromJson(json: Reader?, classOfT: Class<T>): T? {
         if (json == null) {
             return null
         }
