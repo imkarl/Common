@@ -5,7 +5,7 @@ plugins {
 
 
 group 'cn.imkarl.core'
-version '1.4.9'
+version '1.4.10'
 
 apply from: 'publish.gradle'
 

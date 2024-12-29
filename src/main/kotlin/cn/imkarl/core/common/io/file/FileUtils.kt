@@ -1,12 +1,15 @@
 package cn.imkarl.core.common.io.file
 
 import cn.imkarl.core.common.app.AppUtils
+import cn.imkarl.core.common.io.GBytes
+import cn.imkarl.core.common.io.KBytes
+import cn.imkarl.core.common.io.MBytes
 import cn.imkarl.core.common.io.closeQuietly
 import cn.imkarl.core.common.log.LogUtils
 import java.io.*
+import java.net.URL
 import java.nio.channels.FileChannel
 import java.text.DecimalFormat
-import java.util.jar.JarFile
 
 /**
  * 文件相关工具类
@@ -33,34 +36,35 @@ object FileUtils {
      * 获取类所在的根目录
      */
     @JvmStatic
-    fun getClassRootDir(sourceType: SourceType? = null): File {
+    fun getClassRootDir(sourceType: SourceType = SourceType.Kotlin): File {
         val classLoader = FileUtils::class.java.classLoader
         if (AppUtils.isJarRun) {
-            val codeSourcePath = FileUtils::class.java.protectionDomain.codeSource.location.path.removePrefix("file:")
+            val callClassName = Throwable().stackTrace.last().className
+            var codeSourcePath = FileUtils::class.java.classLoader.loadClass(callClassName).protectionDomain.codeSource.location.path
             var jarFile = File(codeSourcePath)
-            while (!jarFile.exists()) {
-                if (jarFile == jarFile.parentFile) {
-                    jarFile = File(codeSourcePath)
-                    break
-                }
-                jarFile = jarFile.parentFile
-                if (jarFile.absolutePath.endsWith("!")) {
-                    jarFile = File(jarFile.absolutePath.removeSuffix("!"))
+            if (!jarFile.exists()) {
+                codeSourcePath = FileUtils::class.java.protectionDomain.codeSource.location.path.removePrefix("file:")
+                jarFile = File(codeSourcePath.substringBeforeLast("!"))
+                while (!jarFile.exists()) {
+                    if (jarFile == jarFile.parentFile) {
+                        jarFile = File(codeSourcePath)
+                        break
+                    }
+                    jarFile = jarFile.parentFile
                 }
             }
             return jarFile
         }
 
         var classRootPath = classLoader.getResource("")!!.file
-        if (classRootPath.endsWith("/build/classes/java/main/")) {
-            classRootPath = classRootPath.removeSuffix("java/main/")
-        } else if (classRootPath.endsWith("/build/classes/kotlin/main/")) {
-            classRootPath = classRootPath.removeSuffix("kotlin/main/")
-        }
         return when (sourceType) {
-            SourceType.Kotlin -> File(classRootPath, "kotlin/main")
+            SourceType.Kotlin -> {
+                if (classRootPath.endsWith("/build/classes/java/main/")) {
+                    classRootPath = classRootPath.removeSuffix("java/main/") + "kotlin/main"
+                }
+                File(classRootPath)
+            }
             SourceType.Java -> File(classRootPath, "java/main")
-            else -> File(classRootPath)
         }
     }
 
@@ -71,6 +75,11 @@ object FileUtils {
     fun getResourceRootDir(): File {
         if (AppUtils.isJarRun) {
             return getClassRootDir()
+        }
+
+        val resourceDir = File(getClassRootDir().toString().substringBeforeLast("/classes"), "processedResources/jvm/main")
+        if (resourceDir.exists()) {
+            return resourceDir
         }
 
         var resourceRootFile = File(getClassRootDir().parent, "resources")
@@ -86,18 +95,36 @@ object FileUtils {
      * 获取资源文件
      */
     @JvmStatic
-    fun getResourceFile(filePath: String): InputStream {
-        val classResourceDir = getResourceRootDir()
-        return if (AppUtils.isJarRun) {
-            JarFile(classResourceDir).let {
-                it.getInputStream(it.getJarEntry(filePath))
+    fun getResourceAsStream(filePath: String): InputStream? {
+        return try {
+            getResource(filePath)?.openStream()
+        } catch (_: Throwable) {
+            null
+        }
+    }
+
+    /**
+     * 获取资源文件
+     */
+    fun getResource(filePath: String): URL? {
+        val filePath = filePath.trim().removePrefix("/")
+        return try {
+            if (AppUtils.isJarRun) {
+                this.javaClass.classLoader.getResource(filePath)
+            } else {
+                val classResourceDir = getResourceRootDir()
+                var file = File(classResourceDir, filePath)
+                if (!file.exists()) {
+                    file = File(File(classResourceDir.parentFile, "classes"), filePath)
+                }
+                if (file.exists()) {
+                    file.toURI().toURL()
+                } else {
+                    null
+                }
             }
-        } else {
-            try {
-                File(classResourceDir, filePath).inputStream()
-            } catch (throwable: FileNotFoundException) {
-                File(File(classResourceDir.parentFile, "classes"), filePath).inputStream()
-            }
+        } catch (_: Throwable) {
+            null
         }
     }
 
@@ -416,6 +443,9 @@ object FileUtils {
             inStream.closeQuietly()
             outStream.closeQuietly()
         }
+        if (!result) {
+            target.delete()
+        }
         return result
     }
 
@@ -440,21 +470,24 @@ object FileUtils {
         } finally {
             fos.closeQuietly()
         }
+        if (!result) {
+            target.delete()
+        }
         return result
     }
 
     @JvmStatic
-    fun formatFileSize(size: Long): String {
-        if (size > FILE_SIZE_GB * 1.2) {
-            return "${fileSizeFormat.format((size * 100 / FILE_SIZE_GB) * 0.01)}GB"
+    fun formatSize(size: Long): String {
+        if (size > 1.2.GBytes) {
+            return "${fileSizeFormat.format((size * 100.0 / 1.GBytes) * 0.01)}GB"
         }
-        if (size > FILE_SIZE_MB * 1.2) {
-            return "${fileSizeFormat.format((size * 100 / FILE_SIZE_MB) * 0.01)}MB"
+        if (size > 1.2.MBytes) {
+            return "${fileSizeFormat.format((size * 100.0 / 1.MBytes) * 0.01)}MB"
         }
-        if (size > FILE_SIZE_KB) {
-            return "${fileSizeFormat.format((size * 100 / FILE_SIZE_KB) * 0.01)}KB"
+        if (size > 1.KBytes) {
+            return "${fileSizeFormat.format((size * 100.0 / 1.KBytes) * 0.01)}KB"
         }
-        return "${fileSizeFormat.format(size)}B"
+        return "${size}B"
     }
 
 }

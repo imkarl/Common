@@ -19,14 +19,6 @@ fun ByteArray.md5(): String {
     return EncryptUtils.md5(this)!!
 }
 
-/**
- * 计算 MD5 值
- * @return 32位MD5校验码
- */
-fun File.md5(): String {
-    return EncryptUtils.md5(this)!!
-}
-
 
 
 /**
