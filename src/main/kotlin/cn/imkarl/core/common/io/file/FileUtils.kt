@@ -77,7 +77,13 @@ object FileUtils {
             return getClassRootDir()
         }
 
-        val resourceDir = File(getClassRootDir().toString().substringBeforeLast("/classes"), "processedResources/jvm/main")
+        val classRootDir = getClassRootDir().absolutePath.substringBeforeLast("/classes")
+        var resourceDir = File(classRootDir, "processedResources/jvm/main")
+        if (resourceDir.exists()) {
+            return resourceDir
+        }
+
+        resourceDir = File(classRootDir, "resources")
         if (resourceDir.exists()) {
             return resourceDir
         }
