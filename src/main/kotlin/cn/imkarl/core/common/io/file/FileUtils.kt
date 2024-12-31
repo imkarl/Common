@@ -83,18 +83,17 @@ object FileUtils {
             return resourceDir
         }
 
+        resourceDir = File(classRootDir, "resources/main")
+        if (resourceDir.exists()) {
+            return resourceDir
+        }
+
         resourceDir = File(classRootDir, "resources")
         if (resourceDir.exists()) {
             return resourceDir
         }
 
-        var resourceRootFile = File(getClassRootDir().parent, "resources")
-        File(resourceRootFile, "main").let {
-            if (it.exists()) {
-                resourceRootFile = it
-            }
-        }
-        return resourceRootFile
+        return File(classRootDir)
     }
 
     /**
@@ -121,7 +120,7 @@ object FileUtils {
                 val classResourceDir = getResourceRootDir()
                 var file = File(classResourceDir, filePath)
                 if (!file.exists()) {
-                    file = File(File(classResourceDir.parentFile, "classes"), filePath)
+                    file = File(getClassRootDir(), "classes")
                 }
                 if (file.exists()) {
                     file.toURI().toURL()
