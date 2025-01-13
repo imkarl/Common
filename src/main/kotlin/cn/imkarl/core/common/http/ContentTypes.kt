@@ -19,6 +19,7 @@ object ContentTypes {
             "md" -> ContentType.Text.Markdown
 
             "apng" -> ContentType.Image.Any
+            "psd" -> ContentType.Image.PSD
 
             "m4b", "m4p" -> ContentType.Video.MPEG
 
@@ -49,6 +50,7 @@ object ContentTypes {
 
 
 val ContentType.Image.Webp get() = ContentType("image", "webp")
+val ContentType.Image.PSD get() = ContentType("image", "vnd.adobe.photoshop")
 val ContentType.Text.Markdown get() = ContentType("text", "markdown")
 
 /**

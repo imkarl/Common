@@ -8,7 +8,7 @@ import cn.imkarl.core.common.json.JsonUtils
  * @param defValue 默认值
  */
 inline fun <reified T> String?.cast(defValue: T): T {
-    if (this.isNullOrBlank()) {
+    if (this == null) {
         return defValue
     }
 
