@@ -79,6 +79,17 @@ object MemoryCaches {
     }
 
     /**
+     * 根据key取对应数据；如果不存在，则调用supplier获取数据并缓存
+     */
+    inline fun <reified T : Any> getOrPut(key: String, supplier: () -> Pair<T, Duration>): T {
+        return get<T>(key) ?: run {
+            val (data, duration) = supplier.invoke()
+            set(key, data, duration)
+            data
+        }
+    }
+
+    /**
      * 根据key取对应数据
      */
     fun <T : Any> get(key: String, clazz: KClass<T>): T? {

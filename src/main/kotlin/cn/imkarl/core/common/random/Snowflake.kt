@@ -94,7 +94,7 @@ class Snowflake(
          * @param datacenterId 数据中心ID
          * @return [Snowflake]
          */
-        fun getSnowflake(workerId: Long, datacenterId: Long): Snowflake {
+        fun getSnowflake(workerId: Long = 0, datacenterId: Long = 0): Snowflake {
             val key = buildKey(this::class.java.name, workerId, datacenterId)
             return POOL.getOrPut(key) { Snowflake(workerId, datacenterId) }
         }
@@ -114,7 +114,6 @@ class Snowflake(
                 "${className}#${params.joinToString("_")}"
             }
         }
-
     }
 
     init {

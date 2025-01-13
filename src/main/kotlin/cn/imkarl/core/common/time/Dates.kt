@@ -22,6 +22,38 @@ class Dates private constructor(val milliseconds: Long){
             )
         }
 
+        fun parse(dateTime: LocalDateTime?, zone: ZoneId = ZoneId.systemDefault()): Dates? {
+            if (dateTime == null) {
+                return null
+            }
+
+            return of(dateTime.atZone(zone).toInstant().toEpochMilli())
+        }
+
+        fun parse(date: java.sql.Date?): Dates? {
+            if (date == null) {
+                return null
+            }
+
+            return of(date.time)
+        }
+
+        fun parse(date: Date?): Dates? {
+            if (date == null) {
+                return null
+            }
+
+            return of(date.time)
+        }
+
+        fun parse(milliseconds: Long?): Dates? {
+            if (milliseconds == null || milliseconds < 0) {
+                return null
+            }
+
+            return of(milliseconds)
+        }
+
         fun parse(dateTime: String?): Dates? {
             if (dateTime.isNullOrBlank()) {
                 return null
