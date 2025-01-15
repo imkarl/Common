@@ -2,6 +2,7 @@ package cn.imkarl.core.common.lang
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSubclassOf
 
 
 fun KType.isClass(clazz: KClass<*>): Boolean = this.classifier == clazz
@@ -9,6 +10,11 @@ fun KType.isClass(clazz: KClass<*>): Boolean = this.classifier == clazz
 fun KType.instanceOf(instance: Any): Boolean = this.classifier == instance::class
 
 fun Any.instanceOf(type: KType): Boolean = type.classifier == this::class
+
+fun Any.instanceOf(clazz: KClass<*>): Boolean {
+    return clazz.isInstance(this)
+            || this::class.isSubclassOf(clazz)
+}
 
 
 val KType.isTypeString: Boolean get() = this.isClass(String::class)

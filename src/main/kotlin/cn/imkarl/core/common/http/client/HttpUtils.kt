@@ -25,10 +25,10 @@ object HttpUtils {
     /**
      * 获取重定向后的地址
      */
-    suspend fun getRedirectUrl(url: String, maxRedirectCount: Int = 10): String? {
+    suspend fun getRedirectUrl(url: String, maxRedirectCount: Int = 10): String {
         return getRedirectUrl(url, maxRedirectCount, 0)
     }
-    private suspend fun getRedirectUrl(url: String, maxRedirectCount: Int, count: Int): String? {
+    private suspend fun getRedirectUrl(url: String, maxRedirectCount: Int, count: Int): String {
         var url = url.trim()
         val resp: HttpResponse = request(HttpMethod.Head, url)
         if (resp.status === HttpStatusCode.Found

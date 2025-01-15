@@ -301,7 +301,7 @@ object FileUtils {
             return true
         }
         if (!file.isFile) {
-            LogUtils.w("deleteFile 'file' is not a file")
+            LogUtils.w("deleteFile '${file}' is not a file")
             return true
         }
         return file.delete() || !file.exists()
@@ -316,17 +316,17 @@ object FileUtils {
     @JvmStatic
     fun deleteDir(dir: File): Boolean {
         if (!dir.exists()) {
-            LogUtils.w("deleteDir 'dir' not exist: $dir")
+            LogUtils.w("deleteDir '${dir}' not exist")
             return true
         }
         if (!dir.isDirectory) {
-            LogUtils.w("deleteDir 'dir' is not a directory")
+            LogUtils.w("deleteDir '${dir}' is not a directory")
             return true
         }
 
         val files = dir.listFiles()
         if (files == null) {
-            LogUtils.w("deleteDir 'dir' not a readable directory: $dir")
+            LogUtils.w("deleteDir '${dir}' not a readable directory")
             return false
         } else {
             for (file in files) {

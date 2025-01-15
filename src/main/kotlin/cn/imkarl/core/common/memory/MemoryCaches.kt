@@ -1,8 +1,8 @@
 package cn.imkarl.core.common.memory
 
+import cn.imkarl.core.common.lang.instanceOf
 import kotlinx.coroutines.*
 import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubclassOf
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -99,11 +99,10 @@ object MemoryCaches {
             memCache.remove(key)
             return null
         }
-        if (pair.second.javaClass != clazz.java
-            && !clazz.java.isInstance(pair.second)
-            && !pair.second::class.isSubclassOf(clazz)) {
+        if (!pair.second.instanceOf(clazz)) {
             return null
         }
+        @Suppress("UNCHECKED_CAST")
         return pair.second as? T
     }
 
